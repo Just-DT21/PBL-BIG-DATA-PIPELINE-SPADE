@@ -1,0 +1,25 @@
+# SPADE Universal Data Optimizer — runtime dependencies
+# Verified against CPython 3.14.7 on Windows (wheels available for all of these).
+#
+#   python -m pip install -r requirements.txt
+
+# --- web application ---
+fastapi==0.143.0
+uvicorn==0.54.0
+python-multipart==0.0.32          # multipart upload parsing
+
+# --- document processing (used only inside the isolated worker process) ---
+pandas==3.0.6                     # vectorized execution path
+numpy==2.5.4                      # pandas dependency, used directly for hashing
+openpyxl==3.1.5                   # XLSX read/write
+pypdf==6.20.0                     # PDF parsing, stream recompression, image swap
+python-docx==1.2.0               # DOCX structure inspection
+
+# --- optional but recommended: enables real RSS measurement in reports ---
+psutil==7.2.2
+
+# --- legacy Excel (.xls) input only ---
+xlrd==2.0.2
+
+# --- development and tests only ---
+#   python -m pip install -r requirements-dev.txt
