@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-motion="full">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Command Center — demo workspace</title>
+<meta name="description" content="Demo command centre for AI project telemetry, tasks and model routing. Sample data only, no live API." />
+<meta name="color-scheme" content="dark light" />
+<link rel="stylesheet" href="/static/css/command-center.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060b16'/%3E%3Cpath d='M16 6l3.2 6.8L26 16l-6.8 3.2L16 26l-3.2-6.8L6 16l6.8-3.2z' fill='%233b82f6'/%3E%3C/svg%3E" />
+<script>
+  // Apply the stored theme before first paint so there is no flash of the wrong
+  // palette. Read-only: the module in main.js owns the state afterwards.
+  (function () {
+    try {
+      var prefs = JSON.parse(localStorage.getItem('cc.preferences.v1') || '{}');
+      var theme = prefs.theme === 'system'
+        ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+        : prefs.theme;
+      if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      if (prefs.motion === 'reduced') document.documentElement.dataset.motion = 'reduced';
+    } catch (error) {
+      /* storage unavailable: keep the dark default */
+    }
+  })();
+</script>
+</head>
+<body>
+
+<div class="cc-app">
+  <div class="cc-scrim" id="cc-scrim" hidden></div>
+
+  <aside class="cc-sidebar" id="cc-sidebar" aria-label="Sections">
+    <div class="cc-brand">
+      <span class="cc-brand-mark" aria-hidden="true"></span>
+      <div>
+        <strong>AI Command Center</strong>
+        <small>Demo workspace</small>
+      </div>
+    </div>
+
+    <nav class="cc-nav" id="cc-nav" aria-label="Main">
+      <a class="cc-nav-item" href="#/overview" data-view="overview">
+        <span class="cc-nav-ico" aria-hidden="true">◈</span>
+        <span class="cc-nav-text">Overview</span>
+      </a>
+      <a class="cc-nav-item" href="#/projects" data-view="projects">
+        <span class="cc-nav-ico" aria-hidden="true">▤</span>
+        <span class="cc-nav-text">Projects</span>
+      </a>
+      <a class="cc-nav-item" href="#/activity" data-view="activity">
+        <span class="cc-nav-ico" aria-hidden="true">◔</span>
+        <span class="cc-nav-text">Activity</span>
+      </a>
+      <a class="cc-nav-item" href="#/settings" data-view="settings">
+        <span class="cc-nav-ico" aria-hidden="true">⚙</span>
+        <span class="cc-nav-text">Settings</span>
+      </a>
+    </nav>
+
+    <div class="cc-sidebar-foot">
+      <div class="cc-side-card glass">
+        <span class="cc-side-label">Active model</span>
+        <strong id="cc-active-model">Nova 3 Mini (DEMO)</strong>
+        <span class="cc-side-label" id="cc-side-tasks">no open tasks</span>
+      </div>
+      <p class="cc-side-note" id="cc-storage-note">Demo mode · state saved in this browser</p>
+      <a class="cc-side-link" href="/">← Back to the SPADE workspace</a>
+    </div>
+  </aside>
+
+  <main class="cc-main">
+    <header class="cc-topbar">
+      <button class="cc-icon-btn cc-burger" id="cc-burger" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="cc-sidebar">☰</button>
+      <div class="cc-titles">
+        <h1 id="cc-view-title">Overview</h1>
+        <p id="cc-view-sub" class="cc-muted">Workspace health at a glance</p>
+      </div>
+      <div class="cc-topbar-actions">
+        <label class="cc-model-picker" for="cc-model">
+          <span class="cc-model-picker-label">Model</span>
+          <select id="cc-model" aria-label="Select the demo model"></select>
+        </label>
+        <button class="cc-icon-btn" id="cc-theme" type="button" aria-label="Switch theme" title="Switch theme">
+          <span id="cc-theme-icon" aria-hidden="true">☾</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="cc-main-body">
+      <section class="cc-view" id="cc-view" aria-live="polite"></section>
+    </div>
+  </main>
+</div>
+
+<div class="cc-toasts" id="toasts" aria-live="polite"></div>
+
+<script type="module" src="/static/js/command-center/main.js"></script>
+</body>
+</html>
