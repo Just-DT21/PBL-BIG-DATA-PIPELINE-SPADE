@@ -51,6 +51,94 @@ const elements = {
 let currentView = null;
 let jobWatcher = null;
 
+// ----------------------------------------------------------------- sidebar
+// The rail/drawer state is two classes on #app-shell ("is-collapsed",
+// "is-drawer-open"); CSS owns the layout, this module owns the state, the
+// persisted preference and the accessibility attributes.
+
+const SIDEBAR_COLLAPSED_KEY = 'nami.sidebar.collapsed';
+const NARROW_SCREEN = 820;
+
+const sidebarNodes = {
+  shell: document.getElementById('app-shell'),
+  toggle: document.getElementById('sidebar-toggle'),
+  toggleIcon: document.getElementById('sidebar-toggle-icon'),
+  menu: document.getElementById('mobile-menu'),
+  scrim: document.getElementById('sidebar-scrim'),
+};
+
+function readStoredCollapse() {
+  // Storage can be unavailable (private browsing, disabled storage). A failed
+  // read is not an error: first-time visitors simply get the expanded sidebar.
+  try {
+    return window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1';
+  } catch (_) {
+    return false;
+  }
+}
+
+function storeCollapse(collapsed) {
+  try {
+    window.localStorage.setItem(SIDEBAR_COLLAPSED_KEY, collapsed ? '1' : '0');
+  } catch (_) {
+    /* The preference will not persist; the sidebar still works. */
+  }
+}
+
+function setCollapsed(collapsed, persist = true) {
+  sidebarNodes.shell.classList.toggle('is-collapsed', collapsed);
+  const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+  sidebarNodes.toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  sidebarNodes.toggle.setAttribute('aria-label', label);
+  sidebarNodes.toggle.title = label;
+  sidebarNodes.toggleIcon.textContent = collapsed ? '\u00bb' : '\u00ab';
+  // Icon-only items need a tooltip; when there is room for the label the item
+  // keeps the title it shipped with (the NAMI item carries a benchmark note).
+  for (const link of elements.nav.querySelectorAll('.nav-item')) {
+    if (link.dataset.tooltipTitle === undefined) {
+      link.dataset.tooltipTitle = link.getAttribute('title') || '';
+    }
+    const labelNode = link.querySelector('.nav-label');
+    const name = (labelNode ? labelNode.textContent : link.textContent).trim();
+    if (collapsed) link.setAttribute('title', name);
+    else if (link.dataset.tooltipTitle) link.setAttribute('title', link.dataset.tooltipTitle);
+    else link.removeAttribute('title');
+  }
+  if (persist) storeCollapse(collapsed);
+}
+
+function drawerIsOpen() {
+  return sidebarNodes.shell.classList.contains('is-drawer-open');
+}
+
+function setDrawer(open) {
+  sidebarNodes.shell.classList.toggle('is-drawer-open', open);
+  sidebarNodes.menu.setAttribute('aria-expanded', open ? 'true' : 'false');
+  const label = open ? 'Close navigation menu' : 'Open navigation menu';
+  sidebarNodes.menu.setAttribute('aria-label', label);
+  sidebarNodes.menu.title = label;
+}
+
+function initSidebar() {
+  setCollapsed(readStoredCollapse(), false);
+  sidebarNodes.toggle.addEventListener('click', () => {
+    setCollapsed(!sidebarNodes.shell.classList.contains('is-collapsed'));
+  });
+  // On narrow screens the topbar button opens the drawer; the drawer always
+  // shows full labels, even when the desktop preference is the collapsed rail.
+  sidebarNodes.menu.addEventListener('click', () => setDrawer(!drawerIsOpen()));
+  sidebarNodes.scrim.addEventListener('click', () => setDrawer(false));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && drawerIsOpen()) setDrawer(false);
+  });
+  elements.nav.addEventListener('click', (event) => {
+    if (event.target.closest('.nav-item')) setDrawer(false);
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > NARROW_SCREEN && drawerIsOpen()) setDrawer(false);
+  });
+}
+
 // --------------------------------------------------------------- navigation
 
 function parseHash() {
@@ -224,6 +312,7 @@ async function startSession() {
 window.addEventListener('hashchange', route);
 
 (async function boot() {
+  initSidebar();
   try {
     await refreshMeta();
     await startSession();

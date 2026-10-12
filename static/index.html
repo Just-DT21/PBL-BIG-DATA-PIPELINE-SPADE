@@ -46,34 +46,51 @@
 
 <!-- ----------------------------------------------------------------- app -->
 <div id="app-shell" class="app" hidden>
-  <aside class="sidebar">
+  <!-- The sidebar collapses to an icon rail on desktop and becomes an
+       off-canvas drawer on narrow screens; both states are driven by the
+       `is-collapsed` / `is-drawer-open` classes on #app-shell. -->
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true"></span>
-      <div>
+      <div class="brand-text">
         <strong>NAMI</strong>
         <small>NAMI Optimizer</small>
       </div>
+      <button type="button" class="icon-btn sidebar-toggle" id="sidebar-toggle" aria-controls="sidebar"
+              aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar">
+        <span id="sidebar-toggle-icon" aria-hidden="true">&#171;</span>
+      </button>
     </div>
     <nav id="nav" aria-label="Main">
-      <a class="nav-item" href="#/dashboard" data-view="dashboard"><span class="nav-ico">▚</span>Dashboard</a>
-      <a class="nav-item" href="#/upload" data-view="upload"><span class="nav-ico">↑</span>Upload File</a>
-      <a class="nav-item" href="#/analysis" data-view="analysis"><span class="nav-ico">◎</span>File Analysis</a>
-      <a class="nav-item" href="#/results" data-view="results"><span class="nav-ico">▤</span>Optimization Results</a>
-      <a class="nav-item" href="#/nami" data-view="nami" title="SPADE vs NAMI benchmark lab"><span class="nav-ico">◭</span>NAMI Optimizer</a>
-      <a class="nav-item" href="#/history" data-view="history"><span class="nav-ico">↻</span>Processing History</a>
-      <a class="nav-item" href="#/settings" data-view="settings"><span class="nav-ico">⚙</span>Settings</a>
+      <a class="nav-item" href="#/dashboard" data-view="dashboard"><span class="nav-ico" aria-hidden="true">▚</span><span class="nav-label">Dashboard</span></a>
+      <a class="nav-item" href="#/upload" data-view="upload"><span class="nav-ico" aria-hidden="true">↑</span><span class="nav-label">Upload File</span></a>
+      <a class="nav-item" href="#/analysis" data-view="analysis"><span class="nav-ico" aria-hidden="true">◎</span><span class="nav-label">File Analysis</span></a>
+      <a class="nav-item" href="#/results" data-view="results"><span class="nav-ico" aria-hidden="true">▤</span><span class="nav-label">Optimization Results</span></a>
+      <a class="nav-item" href="#/nami" data-view="nami" title="SPADE vs NAMI benchmark lab"><span class="nav-ico" aria-hidden="true">◭</span><span class="nav-label">NAMI Optimizer</span></a>
+      <a class="nav-item" href="#/history" data-view="history"><span class="nav-ico" aria-hidden="true">↻</span><span class="nav-label">Processing History</span></a>
+      <a class="nav-item" href="#/settings" data-view="settings"><span class="nav-ico" aria-hidden="true">⚙</span><span class="nav-label">Settings</span></a>
     </nav>
     <div class="sidebar-foot">
       <div class="muted small" id="sidebar-user"></div>
-      <button class="btn btn-ghost btn-block" id="sign-out">Sign out</button>
+      <button class="btn btn-ghost btn-block" id="sign-out" title="Sign out">
+        <span class="nav-ico" aria-hidden="true">↪</span><span class="signout-label">Sign out</span>
+      </button>
     </div>
   </aside>
 
+  <div class="sidebar-scrim" id="sidebar-scrim" aria-hidden="true"></div>
+
   <main class="main">
     <header class="topbar">
-      <div>
-        <h2 id="view-title">Dashboard</h2>
-        <p class="muted small" id="view-subtitle"></p>
+      <div class="topbar-left">
+        <button type="button" class="icon-btn mobile-menu" id="mobile-menu" aria-controls="sidebar"
+                aria-expanded="false" aria-label="Open navigation menu" title="Open navigation menu">
+          <span aria-hidden="true">&#9776;</span>
+        </button>
+        <div>
+          <h2 id="view-title">Dashboard</h2>
+          <p class="muted small" id="view-subtitle"></p>
+        </div>
       </div>
       <div class="topbar-actions">
         <span class="pill" id="engine-pill" title="Active execution engines"></span>
